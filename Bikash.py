@@ -5,6 +5,10 @@ import requests
 import random
 import os
 import re
+import asyncio
+import time
+from datetime import datetime
+
 
 
 API_ID = os.environ.get("API_ID", 9176863) 
@@ -135,6 +139,26 @@ async def chatbot(client, message):
 
 
 @bot.on_message(
+    filters.command(["chatbot", f"chatbot@{BOT_USERNAME}"])
+    & ~filters.private)
+async def chatonoff(client: Client, message: Message):
+    if not message.from_user:
+        return
+    else:
+        user = message.from_user.id
+        chat_id = message.chat.id
+        if user not in (await is_admins(chat_id)):
+            return await message.reply_text(
+                "**ʏᴏᴜ ᴀʀᴇ'ɴᴛ ᴀɴ ᴀᴅᴍɪɴ.**"
+            )
+        else:
+            await message.reply_text(
+            text="» <u>**ᴄʜᴏᴏsᴇ ᴀɴ ᴏᴩᴛɪᴏɴ ᴛᴏ ᴇɴᴀʙʟᴇ/ᴅɪsᴀʙʟᴇ ᴄʜᴀᴛʙᴏᴛ.**</u>",
+            reply_markup=InlineKeyboardMarkup(CHATBOT_ON),
+        )
+
+
+@bot.on_message(
  (
         filters.text
         | filters.sticker
@@ -142,18 +166,18 @@ async def chatbot(client, message):
     & ~filters.private
     & ~filters.bot,
 )
-async def vai(client: Client, message: Message):
+async def vickai(client: Client, message: Message):
 
    chatdb = MongoClient(MONGO_URL)
    chatai = chatdb["Word"]["WordDb"]   
 
    if not message.reply_to_message:
-       vdb = MongoClient(MONGO_URL)
-       v = vdb["vDb"]["v"] 
-       is_v = v.find_one({"chat_id": message.chat.id})
-       if not is_v:
+       vickdb = MongoClient(MONGO_URL)
+       vick = vickdb["VickDb"]["Vick"] 
+       is_vick = vick.find_one({"chat_id": message.chat.id})
+       if not is_vick:
            await bot.send_chat_action(message.chat.id, "typing")
-           K = ["lmao" , "XD"]  
+           K = []  
            is_chat = chatai.find({"word": message.text})  
            k = chatai.find_one({"word": message.text})      
            if k:               
@@ -168,15 +192,15 @@ async def vai(client: Client, message: Message):
                    await message.reply_text(f"{hey}")
    
    if message.reply_to_message:  
-       vdb = MongoClient(MONGO_URL)
-       v = vdb["vDb"]["v"] 
-       is_v = v.find_one({"chat_id": message.chat.id})    
+       vickdb = MongoClient(MONGO_URL)
+       vick = vickdb["VickDb"]["Vick"] 
+       is_vick = vick.find_one({"chat_id": message.chat.id})    
        getme = await bot.get_me()
        bot_id = getme.id                             
        if message.reply_to_message.from_user.id == bot_id: 
-           if not is_v:                   
+           if not is_vick:                   
                await bot.send_chat_action(message.chat.id, "typing")
-               K = ["lmao" , "XD"]  
+               K = []  
                is_chat = chatai.find({"word": message.text})
                k = chatai.find_one({"word": message.text})      
                if k:       
@@ -208,18 +232,18 @@ async def vai(client: Client, message: Message):
     & ~filters.private
     & ~filters.bot,
 )
-async def vstickerai(client: Client, message: Message):
+async def vickstickerai(client: Client, message: Message):
 
    chatdb = MongoClient(MONGO_URL)
    chatai = chatdb["Word"]["WordDb"]   
 
    if not message.reply_to_message:
-       vdb = MongoClient(MONGO_URL)
-       v = vdb["vDb"]["v"] 
-       is_v = v.find_one({"chat_id": message.chat.id})
-       if not is_v:
+       vickdb = MongoClient(MONGO_URL)
+       vick = vickdb["VickDb"]["Vick"] 
+       is_vick = vick.find_one({"chat_id": message.chat.id})
+       if not is_vick:
            await bot.send_chat_action(message.chat.id, "typing")
-           K = ["lmao" , "XD"]  
+           K = []  
            is_chat = chatai.find({"word": message.sticker.file_unique_id})      
            k = chatai.find_one({"word": message.text})      
            if k:           
@@ -234,15 +258,15 @@ async def vstickerai(client: Client, message: Message):
                    await message.reply_sticker(f"{hey}")
    
    if message.reply_to_message:
-       vdb = MongoClient(MONGO_URL)
-       v = vdb["vDb"]["v"] 
-       is_v = v.find_one({"chat_id": message.chat.id})
+       vickdb = MongoClient(MONGO_URL)
+       vick = vickdb["VickDb"]["Vick"] 
+       is_vick = vick.find_one({"chat_id": message.chat.id})
        getme = await bot.get_me()
        bot_id = getme.id
        if message.reply_to_message.from_user.id == bot_id: 
-           if not is_v:                    
+           if not is_vick:                    
                await bot.send_chat_action(message.chat.id, "typing")
-               K = ["lmao" , "XD"]  
+               K = []  
                is_chat = chatai.find({"word": message.text})
                k = chatai.find_one({"word": message.text})      
                if k:           
@@ -275,13 +299,13 @@ async def vstickerai(client: Client, message: Message):
     & filters.private
     & ~filters.bot,
 )
-async def vprivate(client: Client, message: Message):
+async def vickprivate(client: Client, message: Message):
 
    chatdb = MongoClient(MONGO_URL)
    chatai = chatdb["Word"]["WordDb"]
    if not message.reply_to_message: 
        await bot.send_chat_action(message.chat.id, "typing")
-       K = ["lmao" , "XD"]  
+       K = []  
        is_chat = chatai.find({"word": message.text})                 
        for x in is_chat:
            K.append(x['text'])
@@ -297,7 +321,7 @@ async def vprivate(client: Client, message: Message):
        bot_id = getme.id       
        if message.reply_to_message.from_user.id == bot_id:                    
            await bot.send_chat_action(message.chat.id, "typing")
-           K = ["lmao" , "XD"]  
+           K = []  
            is_chat = chatai.find({"word": message.text})                 
            for x in is_chat:
                K.append(x['text'])
@@ -318,13 +342,13 @@ async def vprivate(client: Client, message: Message):
     & filters.private
     & ~filters.bot,
 )
-async def vprivatesticker(client: Client, message: Message):
+async def vickprivatesticker(client: Client, message: Message):
 
    chatdb = MongoClient(MONGO_URL)
    chatai = chatdb["Word"]["WordDb"] 
    if not message.reply_to_message:
        await bot.send_chat_action(message.chat.id, "typing")
-       K = ["lmao" , "XD"]  
+       K = []  
        is_chat = chatai.find({"word": message.sticker.file_unique_id})                 
        for x in is_chat:
            K.append(x['text'])
@@ -340,7 +364,7 @@ async def vprivatesticker(client: Client, message: Message):
        bot_id = getme.id       
        if message.reply_to_message.from_user.id == bot_id:                    
            await bot.send_chat_action(message.chat.id, "typing")
-           K = ["lmao" , "XD"]  
+           K = []  
            is_chat = chatai.find({"word": message.sticker.file_unique_id})                 
            for x in is_chat:
                K.append(x['text'])
@@ -351,5 +375,6 @@ async def vprivatesticker(client: Client, message: Message):
                await message.reply_text(f"{hey}")
            if not Yo == "text":
                await message.reply_sticker(f"{hey}")
-       
+
+print(f"{BOT_NAME} ɪs ᴀʟɪᴠᴇ! ɴᴏᴡ ғᴜᴄᴋ ᴏғғ! ᴀɴᴅ ɢᴏ ᴛᴏ @Wᴇ_ʀғʀɪᴇɴᴅs ʙɪᴛᴄʜ!!")      
 bot.run()
