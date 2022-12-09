@@ -19,7 +19,7 @@ UPDATES_CHANNEL = os.environ.get("UPDATES_CHANNEL", "DragonsXNetwork")
 
 
 bot = Client(
-    "V_Chat_Bot" ,
+    "KotoriChatBot" ,
     api_id = API_ID,
     api_hash = API_HASH ,
     bot_token = BOT_TOKEN
